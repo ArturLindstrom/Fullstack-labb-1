@@ -10,18 +10,10 @@ app.use(
   })
 )
 
-app.get('/', (request, response) => {
-    response.send('bajs')
-  })
 
-app.get('/users', db.getUsers)
-app.get('/actor', db.getActors)
-app.get('/actor/:id', db.getActorById)
-app.get('/actors', db.getActorNames)
-app.get('/users/:id', db.getUserById)
-app.post('/users', db.createUser)
-app.put('/users/:id', db.updateUser)
-app.delete('/users/:id', db.deleteUser)
+app.get('/project', db.getProjects)
+app.get('/project/:id', db.getProjectById)
+app.get('/project', db.postProject)
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
