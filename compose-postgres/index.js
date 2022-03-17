@@ -13,7 +13,9 @@ app.use(
 
 app.get('/project', db.getProjects)
 app.get('/project/:id', db.getProjectById)
-app.get('/project', db.postProject)
+app.post('/project', db.postProject)
+app.delete('/project/:id', db.deleteProject)
+app.put('/project/:id', db.updateProject)
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
