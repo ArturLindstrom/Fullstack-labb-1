@@ -11,7 +11,7 @@ const pool = new Pool({
 
 
 const getProjects = (request, response) => {
-  pool.query('SELECT * FROM projects', (error, results) => {
+  pool.query('SELECT * FROM projects ORDER BY project_id', (error, results) => {
     if (error) {
       throw error
     }
@@ -33,23 +33,23 @@ const getProjectById = (request, response) => {
 const postProject = (request, response) => {
   const { project_name, project_leader, project_budget } = request.body
 
-  pool.query('INSERT INTO projects (project_name, project_leader, project_budget) VALUES ($1, $2, $3)', [project_name, project_leader, project_budget], (error, results) => {
+  pool.query('INSERT INTO projects (project_name, project_leader, project_budget) VALUES ($1, $2, $3) RETURNING *', [project_name, project_leader, project_budget], (error, results) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`Project ${project_name} added`);
+     response.status(201).json(results.rows[0]);
+
   })
 }
-// RETURNERA OBJEKTET ^
 
 const deleteProject = (request, response) => {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM projects WHERE project_id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
+  pool.query('DELETE FROM projects WHERE project_id = $1 RETURNING *', [id], (error, results) => {
+    if (!results.rows[0]) {
+      response.status(404).send(`Project with id ${id} not found`)
     }
-    response.status(201).send(`Project with id ${id} deleted`);
+    else {response.status(200).send(`Project with id ${id} Deleted`)}
   })
 }
 
@@ -57,11 +57,14 @@ const updateProject = (request, response) => {
   const { project_name, project_leader, project_budget } = request.body
   const id = parseInt(request.params.id)
 
-  pool.query('UPDATE projects SET project_name = $1, project_leader = $2, project_budget = $3 WHERE project_id = $4', [project_name, project_leader, project_budget, id], (error, results) => {
-    if (error) {
+  pool.query('UPDATE projects SET project_name = $1, project_leader = $2, project_budget = $3 WHERE project_id = $4 RETURNING *', [project_name, project_leader, project_budget, id], (error, results) => {
+    if(!results.rows[0]){
+      response.status(404).send(`Project with id ${id} not found`)
+    }
+    else if (error) {
       throw error
     }
-    response.status(201).send('Project Updated');
+    else {response.status(200).json(results.rows[0])}
   })
 }
 
