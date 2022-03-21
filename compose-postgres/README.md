@@ -1,37 +1,34 @@
-# Postgresql & PgAdmin powered by compose
+CREATE TABLE projects (
+    project_id serial NOT NULL,
+    project_name varchar(255) NOT NULL,
+    project_leader varchar(255) NOT NULL,
+    project_budget int NOT NULL,
+    PRIMARY KEY (project_id)
+);
 
+CREATE TABLE employees (
+    employee_id serial NOT NULL,
+    employee_firstName varchar(255) NOT NULL,
+    employee_lastName varchar(255) NOT NULL,
+    department_id int NOT NULL,
+    hourly_rate int NOT NULL,
+    PRIMARY KEY (employee_id)
+);
 
-## Requirements:
-* docker >= 17.12.0+
-* docker-compose
+CREATE TABLE departments (
+    department_id serial NOT NULL,
+    department_name varchar(255) NOT NULL,
+    PRIMARY KEY (department_id)
+);
 
-## Quick Start
-* Clone or download this repository
-* Go inside of directory,  `cd compose-postgres`
-* Run this command `docker-compose up -d`
+CREATE TABLE projects_employees (
+    project_id serial NOT NULL,
+    employee_id serial NOT NULL
+);
 
+ALTER TABLE employees
+    ADD FOREIGN KEY (department_id) REFERENCES departments(department_id);
 
-## Environments
-This Compose file contains the following environment variables:
-
-* `POSTGRES_USER` the default value is **postgres**
-* `POSTGRES_PASSWORD` the default value is **changeme**
-* `PGADMIN_PORT` the default value is **5050**
-* `PGADMIN_DEFAULT_EMAIL` the default value is **pgadmin4@pgadmin.org**
-* `PGADMIN_DEFAULT_PASSWORD` the default value is **admin**
-
-## Access to postgres: 
-* `localhost:5432`
-* **Username:** postgres (as a default)
-* **Password:** changeme (as a default)
-
-## Access to PgAdmin: 
-* **URL:** `http://localhost:5050`
-* **Username:** pgadmin4@pgadmin.org (as a default)
-* **Password:** admin (as a default)
-
-## Add a new server in PgAdmin:
-* **Host name/address** `postgres`
-* **Port** `5432`
-* **Username** as `POSTGRES_USER`, by default: `postgres`
-* **Password** as `POSTGRES_PASSWORD`, by default `changeme`
+ALTER TABLE projects_employees
+    ADD FOREIGN KEY (project_id) REFERENCES projects(project_id),
+    ADD FOREIGN KEY (employee_id) REFERENCES employees(employee_id);

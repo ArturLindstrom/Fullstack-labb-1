@@ -5,6 +5,7 @@ const pool = new Pool({
   database: 'Labb',
   password: 'changeme',
   port: 5432,
+  
 })
 
 
@@ -22,10 +23,10 @@ const getProjectById = (request, response) => {
   const id = parseInt(request.params.id)
   console.log(id)
   pool.query('SELECT * FROM projects WHERE project_id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
+    if (!results.rows[0]) {
+      response.status(404).send('Project not found')
     }
-    response.status(200).json(results.rows)
+    response.status(200).json(results.rows[0])
   })
 }
 
@@ -36,9 +37,10 @@ const postProject = (request, response) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`Project added`);
+    response.status(201).send(`Project ${project_name} added`);
   })
 }
+// RETURNERA OBJEKTET ^
 
 const deleteProject = (request, response) => {
   const id = parseInt(request.params.id)
@@ -47,7 +49,7 @@ const deleteProject = (request, response) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`Project deleted`);
+    response.status(201).send(`Project with id ${id} deleted`);
   })
 }
 
